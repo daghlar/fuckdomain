@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  subdomain-finder:
+    build: .
+    container_name: subdomain-finder
+    volumes:
+      - ./results:/app/results
+      - ./wordlists:/app/wordlists
+      - ./config:/app/config
+    environment:
+      - LOG_LEVEL=info
+      - LOG_FORMAT=json
+      - OUTPUT_DIR=/app/results
+    command: ["scan", "example.com", "--verbose", "--progress"]
+    restart: unless-stopped
+
+  subdomain-finder-dev:
+    build: .
+    container_name: subdomain-finder-dev
+    volumes:
+      - ./results:/app/results
+      - ./wordlists:/app/wordlists
+      - ./config:/app/config
+      - .:/app/src
+    environment:
+      - LOG_LEVEL=debug
+      - LOG_FORMAT=text
+      - OUTPUT_DIR=/app/results
+    command: ["scan", "example.com", "--verbose", "--progress", "--threads", "5"]
+    restart: "no"
+
+  subdomain-finder-prod:
+    build: .
+    container_name: subdomain-finder-prod
+    volumes:
+      - ./results:/app/results
+      - ./wordlists:/app/wordlists
+      - ./config:/app/config
+    environment:
+      - LOG_LEVEL=warn
+      - LOG_FORMAT=json
+      - OUTPUT_DIR=/app/results
+    command: ["scan", "example.com", "--threads", "50", "--rate-limit", "100"]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
