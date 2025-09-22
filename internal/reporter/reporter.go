@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 	"subdomain-finder/internal/types"
+	"time"
 )
 
 type Reporter struct {
@@ -21,18 +21,18 @@ func NewReporter(outputDir string) *Reporter {
 
 func (r *Reporter) GenerateSummaryReport(results []types.Result) *types.ScanSummary {
 	summary := &types.ScanSummary{
-		TotalSubdomains:    len(results),
-		FoundSubdomains:    0,
-		OpenPorts:          0,
-		Vulnerabilities:    0,
-		HighRiskItems:      0,
-		Technologies:       make([]types.Technology, 0),
-		TopPorts:           make([]types.PortInfo, 0),
-		RiskDistribution:   make(map[string]int),
-		TechnologyStats:    make(map[string]int),
-		StartTime:          time.Now(),
-		EndTime:            time.Now(),
-		Metadata:           make(map[string]interface{}),
+		TotalSubdomains:  len(results),
+		FoundSubdomains:  0,
+		OpenPorts:        0,
+		Vulnerabilities:  0,
+		HighRiskItems:    0,
+		Technologies:     make([]types.Technology, 0),
+		TopPorts:         make([]types.PortInfo, 0),
+		RiskDistribution: make(map[string]int),
+		TechnologyStats:  make(map[string]int),
+		StartTime:        time.Now(),
+		EndTime:          time.Now(),
+		Metadata:         make(map[string]interface{}),
 	}
 
 	techMap := make(map[string]int)
@@ -89,24 +89,24 @@ func (r *Reporter) GenerateSummaryReport(results []types.Result) *types.ScanSumm
 
 func (r *Reporter) getServiceName(port int) string {
 	services := map[int]string{
-		21:   "FTP",
-		22:   "SSH",
-		23:   "Telnet",
-		25:   "SMTP",
-		53:   "DNS",
-		80:   "HTTP",
-		110:  "POP3",
-		143:  "IMAP",
-		443:  "HTTPS",
-		993:  "IMAPS",
-		995:  "POP3S",
-		3389: "RDP",
-		5432: "PostgreSQL",
-		3306: "MySQL",
-		6379: "Redis",
+		21:    "FTP",
+		22:    "SSH",
+		23:    "Telnet",
+		25:    "SMTP",
+		53:    "DNS",
+		80:    "HTTP",
+		110:   "POP3",
+		143:   "IMAP",
+		443:   "HTTPS",
+		993:   "IMAPS",
+		995:   "POP3S",
+		3389:  "RDP",
+		5432:  "PostgreSQL",
+		3306:  "MySQL",
+		6379:  "Redis",
 		27017: "MongoDB",
 	}
-	
+
 	if service, exists := services[port]; exists {
 		return service
 	}
@@ -142,24 +142,24 @@ func (r *Reporter) SaveAsXML(results []types.Result, filename string) error {
 	}
 	defer file.Close()
 
-	file.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-	file.WriteString("<subdomain-scan-results>\n")
-	file.WriteString(fmt.Sprintf("  <scan-info>\n"))
-	file.WriteString(fmt.Sprintf("    <total-subdomains>%d</total-subdomains>\n", len(results)))
-	file.WriteString(fmt.Sprintf("    <scan-date>%s</scan-date>\n", time.Now().Format(time.RFC3339)))
-	file.WriteString(fmt.Sprintf("  </scan-info>\n"))
-	
+	_, _ = file.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+	_, _ = file.WriteString("<subdomain-scan-results>\n")
+	_, _ = file.WriteString(fmt.Sprintf("  <scan-info>\n"))
+	_, _ = file.WriteString(fmt.Sprintf("    <total-subdomains>%d</total-subdomains>\n", len(results)))
+	_, _ = file.WriteString(fmt.Sprintf("    <scan-date>%s</scan-date>\n", time.Now().Format(time.RFC3339)))
+	_, _ = file.WriteString(fmt.Sprintf("  </scan-info>\n"))
+
 	for _, result := range results {
-		file.WriteString("  <subdomain>\n")
-		file.WriteString(fmt.Sprintf("    <name>%s</name>\n", result.Subdomain))
-		file.WriteString(fmt.Sprintf("    <ip>%s</ip>\n", result.IP))
+		_, _ = file.WriteString("  <subdomain>\n")
+		_, _ = file.WriteString(fmt.Sprintf("    <name>%s</name>\n", result.Subdomain))
+		_, _ = file.WriteString(fmt.Sprintf("    <ip>%s</ip>\n", result.IP))
 		file.WriteString(fmt.Sprintf("    <status>%s</status>\n", result.Status))
 		file.WriteString(fmt.Sprintf("    <server>%s</server>\n", result.Server))
 		file.WriteString(fmt.Sprintf("    <title>%s</title>\n", result.Title))
 		file.WriteString(fmt.Sprintf("    <risk-level>%s</risk-level>\n", result.RiskLevel))
 		file.WriteString(fmt.Sprintf("    <confidence>%d</confidence>\n", result.Confidence))
 		file.WriteString(fmt.Sprintf("    <response-time>%s</response-time>\n", result.ResponseTime))
-		
+
 		if len(result.Ports) > 0 {
 			file.WriteString("    <ports>\n")
 			for _, port := range result.Ports {
@@ -172,7 +172,7 @@ func (r *Reporter) SaveAsXML(results []types.Result, filename string) error {
 			}
 			file.WriteString("    </ports>\n")
 		}
-		
+
 		if len(result.Technologies) > 0 {
 			file.WriteString("    <technologies>\n")
 			for _, tech := range result.Technologies {
@@ -185,7 +185,7 @@ func (r *Reporter) SaveAsXML(results []types.Result, filename string) error {
 			}
 			file.WriteString("    </technologies>\n")
 		}
-		
+
 		if len(result.Vulnerabilities) > 0 {
 			file.WriteString("    <vulnerabilities>\n")
 			for _, vuln := range result.Vulnerabilities {
@@ -198,10 +198,10 @@ func (r *Reporter) SaveAsXML(results []types.Result, filename string) error {
 			}
 			file.WriteString("    </vulnerabilities>\n")
 		}
-		
+
 		file.WriteString("  </subdomain>\n")
 	}
-	
+
 	file.WriteString("</subdomain-scan-results>\n")
 	return nil
 }
@@ -220,7 +220,7 @@ func (r *Reporter) SaveAsCSV(results []types.Result, filename string) error {
 
 	// Write header
 	file.WriteString("Subdomain,IP,Status,Server,Title,Risk Level,Confidence,Response Time,Open Ports,Technologies,Vulnerabilities\n")
-	
+
 	for _, result := range results {
 		ports := ""
 		for i, port := range result.Ports {
@@ -229,7 +229,7 @@ func (r *Reporter) SaveAsCSV(results []types.Result, filename string) error {
 			}
 			ports += fmt.Sprintf("%d:%s", port.Port, port.Service)
 		}
-		
+
 		technologies := ""
 		for i, tech := range result.Technologies {
 			if i > 0 {
@@ -237,7 +237,7 @@ func (r *Reporter) SaveAsCSV(results []types.Result, filename string) error {
 			}
 			technologies += tech.Name
 		}
-		
+
 		vulnerabilities := ""
 		for i, vuln := range result.Vulnerabilities {
 			if i > 0 {
@@ -245,7 +245,7 @@ func (r *Reporter) SaveAsCSV(results []types.Result, filename string) error {
 			}
 			vulnerabilities += vuln.Name
 		}
-		
+
 		line := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s\n",
 			result.Subdomain,
 			result.IP,
@@ -261,6 +261,6 @@ func (r *Reporter) SaveAsCSV(results []types.Result, filename string) error {
 		)
 		file.WriteString(line)
 	}
-	
+
 	return nil
 }

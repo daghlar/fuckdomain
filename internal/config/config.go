@@ -5,11 +5,11 @@ import (
 )
 
 type Config struct {
-	Domain     string   `validate:"required"`
+	Domain     string `validate:"required"`
 	Wordlist   string
-	Threads    int      `validate:"min=1,max=1000"`
-	Timeout    int      `validate:"min=1,max=60"`
-	RateLimit  int      `validate:"min=0"`
+	Threads    int `validate:"min=1,max=1000"`
+	Timeout    int `validate:"min=1,max=60"`
+	RateLimit  int `validate:"min=0"`
 	OutputFile string
 	Verbose    bool
 	JSON       bool
@@ -19,35 +19,35 @@ type Config struct {
 	NoColor    bool
 	UserAgent  string
 	Headers    []string
-	Retries    int      `validate:"min=0,max=10"`
-	Delay      int      `validate:"min=0"`
+	Retries    int `validate:"min=0,max=10"`
+	Delay      int `validate:"min=0"`
 }
 
 type DNSConfig struct {
-	Servers     []string      `yaml:"servers"`
-	Timeout     time.Duration `yaml:"timeout"`
-	Retries     int           `yaml:"retries"`
-	RateLimit   int           `yaml:"rate_limit"`
+	Servers   []string      `yaml:"servers"`
+	Timeout   time.Duration `yaml:"timeout"`
+	Retries   int           `yaml:"retries"`
+	RateLimit int           `yaml:"rate_limit"`
 }
 
 type HTTPConfig struct {
-	Timeout     time.Duration `yaml:"timeout"`
-	UserAgent   string        `yaml:"user_agent"`
-	Headers     map[string]string `yaml:"headers"`
-	Retries     int           `yaml:"retries"`
-	RateLimit   int           `yaml:"rate_limit"`
-	FollowRedirects bool      `yaml:"follow_redirects"`
+	Timeout         time.Duration     `yaml:"timeout"`
+	UserAgent       string            `yaml:"user_agent"`
+	Headers         map[string]string `yaml:"headers"`
+	Retries         int               `yaml:"retries"`
+	RateLimit       int               `yaml:"rate_limit"`
+	FollowRedirects bool              `yaml:"follow_redirects"`
 }
 
 type OutputConfig struct {
-	Format      string `yaml:"format"`
-	Directory   string `yaml:"directory"`
-	Filename    string `yaml:"filename"`
-	JSON        bool   `yaml:"json"`
-	XML         bool   `yaml:"xml"`
-	CSV         bool   `yaml:"csv"`
-	Color       bool   `yaml:"color"`
-	Verbose     bool   `yaml:"verbose"`
+	Format    string `yaml:"format"`
+	Directory string `yaml:"directory"`
+	Filename  string `yaml:"filename"`
+	JSON      bool   `yaml:"json"`
+	XML       bool   `yaml:"xml"`
+	CSV       bool   `yaml:"csv"`
+	Color     bool   `yaml:"color"`
+	Verbose   bool   `yaml:"verbose"`
 }
 
 type LogConfig struct {

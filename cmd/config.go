@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"subdomain-finder/internal/config"
+
+	"github.com/spf13/cobra"
 )
 
 var configCmd = &cobra.Command{

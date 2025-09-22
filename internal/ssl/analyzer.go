@@ -32,15 +32,15 @@ type CertificateInfo struct {
 }
 
 type SSLResult struct {
-	Host           string
-	Port           int
-	Protocol       string
-	Certificate    *CertificateInfo
-	SupportedCiphers []string
+	Host               string
+	Port               int
+	Protocol           string
+	Certificate        *CertificateInfo
+	SupportedCiphers   []string
 	SupportedProtocols []string
-	IsSecure       bool
-	Grade          string
-	Recommendations []string
+	IsSecure           bool
+	Grade              string
+	Recommendations    []string
 }
 
 type SSLAnalyzer struct {
@@ -55,7 +55,7 @@ func NewSSLAnalyzer(timeout time.Duration) *SSLAnalyzer {
 
 func (sa *SSLAnalyzer) Analyze(host string, port int) (*SSLResult, error) {
 	address := fmt.Sprintf("%s:%d", host, port)
-	
+
 	conn, err := net.DialTimeout("tcp", address, sa.timeout)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (sa *SSLAnalyzer) Analyze(host string, port int) (*SSLResult, error) {
 	defer conn.Close()
 
 	tlsConn := tls.Client(conn, &tls.Config{
-		ServerName: host,
+		ServerName:         host,
 		InsecureSkipVerify: true,
 	})
 
@@ -77,28 +77,28 @@ func (sa *SSLAnalyzer) Analyze(host string, port int) (*SSLResult, error) {
 	certInfo := sa.analyzeCertificate(cert)
 	supportedCiphers := sa.getSupportedCiphers(tlsConn)
 	supportedProtocols := sa.getSupportedProtocols(tlsConn)
-	
+
 	isSecure := sa.isSecure(certInfo, supportedCiphers, supportedProtocols)
 	grade := sa.calculateGrade(certInfo, supportedCiphers, supportedProtocols)
 	recommendations := sa.getRecommendations(certInfo, supportedCiphers, supportedProtocols)
 
 	return &SSLResult{
-		Host:                host,
-		Port:                port,
-		Protocol:            "TLS",
-		Certificate:         certInfo,
-		SupportedCiphers:    supportedCiphers,
-		SupportedProtocols:  supportedProtocols,
-		IsSecure:            isSecure,
-		Grade:               grade,
-		Recommendations:     recommendations,
+		Host:               host,
+		Port:               port,
+		Protocol:           "TLS",
+		Certificate:        certInfo,
+		SupportedCiphers:   supportedCiphers,
+		SupportedProtocols: supportedProtocols,
+		IsSecure:           isSecure,
+		Grade:              grade,
+		Recommendations:    recommendations,
 	}, nil
 }
 
 func (sa *SSLAnalyzer) analyzeCertificate(cert *x509.Certificate) *CertificateInfo {
 	now := time.Now()
 	daysUntilExpiry := int(cert.NotAfter.Sub(now).Hours() / 24)
-	
+
 	info := &CertificateInfo{
 		Subject:            cert.Subject.String(),
 		Issuer:             cert.Issuer.String(),
@@ -126,7 +126,7 @@ func (sa *SSLAnalyzer) analyzeCertificate(cert *x509.Certificate) *CertificateIn
 
 func (sa *SSLAnalyzer) getKeyUsage(keyUsage x509.KeyUsage) []string {
 	var usage []string
-	
+
 	if keyUsage&x509.KeyUsageDigitalSignature != 0 {
 		usage = append(usage, "Digital Signature")
 	}
@@ -154,7 +154,7 @@ func (sa *SSLAnalyzer) getKeyUsage(keyUsage x509.KeyUsage) []string {
 	if keyUsage&x509.KeyUsageDecipherOnly != 0 {
 		usage = append(usage, "Decipher Only")
 	}
-	
+
 	return usage
 }
 
@@ -192,7 +192,7 @@ func (sa *SSLAnalyzer) getKeyStrength(algorithm x509.PublicKeyAlgorithm) string 
 
 func (sa *SSLAnalyzer) checkVulnerabilities(cert *x509.Certificate) []string {
 	var vulnerabilities []string
-	
+
 	if cert.SignatureAlgorithm == x509.MD5WithRSA {
 		vulnerabilities = append(vulnerabilities, "MD5 signature (weak)")
 	}
@@ -202,25 +202,25 @@ func (sa *SSLAnalyzer) checkVulnerabilities(cert *x509.Certificate) []string {
 	if cert.PublicKeyAlgorithm == x509.DSA {
 		vulnerabilities = append(vulnerabilities, "DSA public key (deprecated)")
 	}
-	
+
 	return vulnerabilities
 }
 
 func (sa *SSLAnalyzer) getSupportedCiphers(conn *tls.Conn) []string {
 	state := conn.ConnectionState()
 	var ciphers []string
-	
+
 	if state.CipherSuite != 0 {
 		ciphers = append(ciphers, tls.CipherSuiteName(state.CipherSuite))
 	}
-	
+
 	return ciphers
 }
 
 func (sa *SSLAnalyzer) getSupportedProtocols(conn *tls.Conn) []string {
 	state := conn.ConnectionState()
 	var protocols []string
-	
+
 	switch state.Version {
 	case tls.VersionTLS10:
 		protocols = append(protocols, "TLS 1.0")
@@ -231,7 +231,7 @@ func (sa *SSLAnalyzer) getSupportedProtocols(conn *tls.Conn) []string {
 	case tls.VersionTLS13:
 		protocols = append(protocols, "TLS 1.3")
 	}
-	
+
 	return protocols
 }
 
@@ -239,23 +239,23 @@ func (sa *SSLAnalyzer) isSecure(certInfo *CertificateInfo, ciphers, protocols []
 	if !certInfo.IsValid || certInfo.IsExpired {
 		return false
 	}
-	
+
 	if certInfo.IsSelfSigned {
 		return false
 	}
-	
+
 	for _, vuln := range certInfo.Vulnerabilities {
 		if strings.Contains(vuln, "weak") || strings.Contains(vuln, "deprecated") {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
 func (sa *SSLAnalyzer) calculateGrade(certInfo *CertificateInfo, ciphers, protocols []string) string {
 	score := 100
-	
+
 	if certInfo.IsExpired {
 		score -= 50
 	}
@@ -268,7 +268,7 @@ func (sa *SSLAnalyzer) calculateGrade(certInfo *CertificateInfo, ciphers, protoc
 	if certInfo.IsWildcard {
 		score -= 10
 	}
-	
+
 	for _, vuln := range certInfo.Vulnerabilities {
 		if strings.Contains(vuln, "weak") {
 			score -= 20
@@ -277,11 +277,11 @@ func (sa *SSLAnalyzer) calculateGrade(certInfo *CertificateInfo, ciphers, protoc
 			score -= 15
 		}
 	}
-	
+
 	if len(protocols) == 0 || !sa.hasModernProtocol(protocols) {
 		score -= 25
 	}
-	
+
 	if score >= 90 {
 		return "A+"
 	} else if score >= 80 {
@@ -308,7 +308,7 @@ func (sa *SSLAnalyzer) hasModernProtocol(protocols []string) bool {
 
 func (sa *SSLAnalyzer) getRecommendations(certInfo *CertificateInfo, ciphers, protocols []string) []string {
 	var recommendations []string
-	
+
 	if certInfo.IsExpired {
 		recommendations = append(recommendations, "Certificate is expired - renew immediately")
 	}
@@ -327,18 +327,18 @@ func (sa *SSLAnalyzer) getRecommendations(certInfo *CertificateInfo, ciphers, pr
 	if certInfo.IsWildcard {
 		recommendations = append(recommendations, "Consider using specific certificates for better security")
 	}
-	
+
 	return recommendations
 }
 
 func (sa *SSLAnalyzer) AnalyzeMultiple(hosts []string, port int) map[string]*SSLResult {
 	results := make(map[string]*SSLResult)
-	
+
 	for _, host := range hosts {
 		if result, err := sa.Analyze(host, port); err == nil {
 			results[host] = result
 		}
 	}
-	
+
 	return results
 }

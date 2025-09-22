@@ -10,8 +10,8 @@ import (
 )
 
 type PortScanner struct {
-	timeout    time.Duration
-	threads    int
+	timeout     time.Duration
+	threads     int
 	commonPorts []int
 }
 
@@ -24,16 +24,16 @@ type PortResult struct {
 }
 
 type ScanResult struct {
-	Host      string
-	Ports     []PortResult
-	OpenPorts int
+	Host       string
+	Ports      []PortResult
+	OpenPorts  int
 	TotalPorts int
 }
 
 func NewPortScanner(timeout time.Duration, threads int) *PortScanner {
 	return &PortScanner{
-		timeout:    timeout,
-		threads:    threads,
+		timeout: timeout,
+		threads: threads,
 		commonPorts: []int{
 			21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 993, 995, 1723, 3306, 3389, 5432, 5900, 8080, 8443, 8888, 9000, 9090, 9200, 9300, 11211, 27017, 6379, 5984, 9200, 9300, 11211, 27017, 6379, 5984,
 		},
@@ -63,7 +63,7 @@ func (ps *PortScanner) ScanHost(host string, ports []int) *ScanResult {
 			defer func() { <-semaphore }()
 
 			portResult := ps.scanPort(host, p)
-			
+
 			mu.Lock()
 			if portResult.State == "open" {
 				result.OpenPorts++
@@ -104,8 +104,8 @@ func (ps *PortScanner) scanPort(host string, port int) PortResult {
 }
 
 func (ps *PortScanner) getBanner(conn net.Conn, port int) string {
-	conn.SetReadDeadline(time.Now().Add(2 * time.Second))
-	
+	_ = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+
 	buffer := make([]byte, 1024)
 	n, err := conn.Read(buffer)
 	if err != nil {
@@ -116,7 +116,7 @@ func (ps *PortScanner) getBanner(conn net.Conn, port int) string {
 	banner = strings.TrimSpace(banner)
 	banner = strings.ReplaceAll(banner, "\r\n", " ")
 	banner = strings.ReplaceAll(banner, "\n", " ")
-	
+
 	if len(banner) > 200 {
 		banner = banner[:200] + "..."
 	}
@@ -174,7 +174,7 @@ func (ps *PortScanner) ScanMultipleHosts(hosts []string, ports []int) map[string
 		go func(h string) {
 			defer wg.Done()
 			result := ps.ScanHost(h, ports)
-			
+
 			mu.Lock()
 			results[h] = result
 			mu.Unlock()
@@ -205,7 +205,7 @@ func (ps *PortScanner) CustomScan(host string, portRange string) *ScanResult {
 
 func (ps *PortScanner) parsePortRange(portRange string) []int {
 	var ports []int
-	
+
 	if strings.Contains(portRange, "-") {
 		parts := strings.Split(portRange, "-")
 		if len(parts) == 2 {
@@ -229,6 +229,6 @@ func (ps *PortScanner) parsePortRange(portRange string) []int {
 			ports = append(ports, port)
 		}
 	}
-	
+
 	return ports
 }

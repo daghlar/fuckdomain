@@ -11,22 +11,22 @@ import (
 )
 
 type BruteforceConfig struct {
-	Threads    int
-	Timeout    time.Duration
-	UserAgent  string
-	Headers    map[string]string
-	Extensions []string
+	Threads     int
+	Timeout     time.Duration
+	UserAgent   string
+	Headers     map[string]string
+	Extensions  []string
 	StatusCodes []int
 }
 
 type BruteforceResult struct {
-	URL          string
-	StatusCode   int
+	URL           string
+	StatusCode    int
 	ContentLength int64
-	Title        string
-	Server       string
-	ResponseTime time.Duration
-	Found        bool
+	Title         string
+	Server        string
+	ResponseTime  time.Duration
+	Found         bool
 }
 
 type DirectoryBruteforcer struct {
@@ -74,25 +74,25 @@ func (db *DirectoryBruteforcer) Bruteforce(baseURL string, wordlist []string) ma
 
 func (db *DirectoryBruteforcer) generateURLs(baseURL, word string) []string {
 	var urls []string
-	
+
 	// Clean base URL
 	baseURL = strings.TrimSuffix(baseURL, "/")
-	
+
 	// Directory bruteforce
 	urls = append(urls, fmt.Sprintf("%s/%s/", baseURL, word))
 	urls = append(urls, fmt.Sprintf("%s/%s", baseURL, word))
-	
+
 	// File bruteforce with extensions
 	for _, ext := range db.config.Extensions {
 		urls = append(urls, fmt.Sprintf("%s/%s%s", baseURL, word, ext))
 	}
-	
+
 	return urls
 }
 
 func (db *DirectoryBruteforcer) checkURL(url string) *BruteforceResult {
 	start := time.Now()
-	
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return &BruteforceResult{URL: url, Found: false}
@@ -110,7 +110,7 @@ func (db *DirectoryBruteforcer) checkURL(url string) *BruteforceResult {
 	defer resp.Body.Close()
 
 	responseTime := time.Since(start)
-	
+
 	// Check if status code is in allowed list
 	allowed := false
 	for _, code := range db.config.StatusCodes {
@@ -119,7 +119,7 @@ func (db *DirectoryBruteforcer) checkURL(url string) *BruteforceResult {
 			break
 		}
 	}
-	
+
 	if !allowed {
 		return &BruteforceResult{URL: url, Found: false}
 	}
@@ -128,18 +128,18 @@ func (db *DirectoryBruteforcer) checkURL(url string) *BruteforceResult {
 	body := make([]byte, 1024)
 	n, _ := io.ReadFull(resp.Body, body)
 	content := string(body[:n])
-	
+
 	title := db.extractTitle(content)
 	server := resp.Header.Get("Server")
 
 	return &BruteforceResult{
-		URL:          url,
-		StatusCode:   resp.StatusCode,
+		URL:           url,
+		StatusCode:    resp.StatusCode,
 		ContentLength: resp.ContentLength,
-		Title:        title,
-		Server:       server,
-		ResponseTime: responseTime,
-		Found:        true,
+		Title:         title,
+		Server:        server,
+		ResponseTime:  responseTime,
+		Found:         true,
 	}
 }
 

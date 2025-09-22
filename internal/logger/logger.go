@@ -14,7 +14,7 @@ type Logger struct {
 
 func NewLogger(level, format string) *Logger {
 	logger := logrus.New()
-	
+
 	switch level {
 	case "debug":
 		logger.SetLevel(logrus.DebugLevel)

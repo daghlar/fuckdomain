@@ -64,7 +64,7 @@ func (r *Resolver) resolveA(domain string) (string, error) {
 	}
 
 	servers := []string{"8.8.8.8:53", "1.1.1.1:53", "8.8.4.4:53"}
-	
+
 	for _, server := range servers {
 		response, _, err := r.client.Exchange(msg, server)
 		if err != nil {
@@ -97,7 +97,7 @@ func (r *Resolver) ResolveCNAME(domain string) (string, error) {
 	}
 
 	servers := []string{"8.8.8.8:53", "1.1.1.1:53", "8.8.4.4:53"}
-	
+
 	for _, server := range servers {
 		response, _, err := r.client.Exchange(msg, server)
 		if err != nil {
@@ -131,7 +131,7 @@ func (r *Resolver) ResolveMX(domain string) ([]string, error) {
 
 	var mxRecords []string
 	servers := []string{"8.8.8.8:53", "1.1.1.1:53", "8.8.4.4:53"}
-	
+
 	for _, server := range servers {
 		response, _, err := r.client.Exchange(msg, server)
 		if err != nil {
@@ -170,7 +170,7 @@ func (r *Resolver) ResolveTXT(domain string) ([]string, error) {
 
 	var txtRecords []string
 	servers := []string{"8.8.8.8:53", "1.1.1.1:53", "8.8.4.4:53"}
-	
+
 	for _, server := range servers {
 		response, _, err := r.client.Exchange(msg, server)
 		if err != nil {

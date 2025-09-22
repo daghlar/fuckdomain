@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
-	"time"
 	"subdomain-finder/internal/types"
+	"time"
 )
 
 type HTMLReporter struct {
@@ -34,8 +34,8 @@ func (hr *HTMLReporter) GenerateReport(summary *types.ScanSummary, results []typ
 
 	tmpl := hr.getReportTemplate()
 	if err := tmpl.Execute(file, map[string]interface{}{
-		"Summary": summary,
-		"Results": results,
+		"Summary":     summary,
+		"Results":     results,
 		"GeneratedAt": time.Now(),
 	}); err != nil {
 		return err
@@ -417,6 +417,6 @@ func (hr *HTMLReporter) getReportTemplate() *template.Template {
 </body>
 </html>
 `
-	
+
 	return template.Must(template.New("report").Parse(tmpl))
 }

@@ -7,10 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
 	"subdomain-finder/internal/finder"
 	"subdomain-finder/internal/logger"
 	"subdomain-finder/internal/types"
+
+	"github.com/fatih/color"
 )
 
 type Outputter struct {
@@ -29,15 +30,15 @@ func NewOutputter(cfg finder.Config, log *logger.Logger) *Outputter {
 
 func (o *Outputter) PrintResult(result types.Result, verbose bool) {
 	o.results = append(o.results, result)
-	
+
 	green := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 	blue := color.New(color.FgBlue).SprintFunc()
 	white := color.New(color.FgWhite).SprintFunc()
 
-	fmt.Printf("[%s] %s -> %s", 
-		green("FOUND"), 
-		white(result.Subdomain), 
+	fmt.Printf("[%s] %s -> %s",
+		green("FOUND"),
+		white(result.Subdomain),
 		blue(result.IP))
 
 	if result.Status != "N/A" {
@@ -54,11 +55,11 @@ func (o *Outputter) PrintResult(result types.Result, verbose bool) {
 func (o *Outputter) PrintHeader(domain string) {
 	cyan := color.New(color.FgCyan).SprintFunc()
 	bold := color.New(color.Bold).SprintFunc()
-	
+
 	fmt.Println()
-	fmt.Printf("%s %s %s\n", 
-		cyan("="), 
-		bold("SUBDOMAIN FINDER"), 
+	fmt.Printf("%s %s %s\n",
+		cyan("="),
+		bold("SUBDOMAIN FINDER"),
 		cyan("="))
 	fmt.Printf("Target: %s\n", bold(domain))
 	fmt.Printf("Started: %s\n", time.Now().Format("2006-01-02 15:04:05"))
@@ -69,11 +70,11 @@ func (o *Outputter) PrintSummary(totalFound int, duration time.Duration) {
 	green := color.New(color.FgGreen).SprintFunc()
 	cyan := color.New(color.FgCyan).SprintFunc()
 	bold := color.New(color.Bold).SprintFunc()
-	
+
 	fmt.Println()
-	fmt.Printf("%s %s %s\n", 
-		cyan("="), 
-		bold("SUMMARY"), 
+	fmt.Printf("%s %s %s\n",
+		cyan("="),
+		bold("SUMMARY"),
 		cyan("="))
 	fmt.Printf("Total subdomains found: %s\n", green(totalFound))
 	fmt.Printf("Duration: %s\n", duration.String())
@@ -93,12 +94,12 @@ func (o *Outputter) SaveToFile(results []types.Result, filename string) {
 	defer file.Close()
 
 	for _, result := range results {
-		line := fmt.Sprintf("%s,%s,%s,%s\n", 
-			result.Subdomain, 
-			result.IP, 
-			result.Status, 
+		line := fmt.Sprintf("%s,%s,%s,%s\n",
+			result.Subdomain,
+			result.IP,
+			result.Status,
 			strings.ReplaceAll(result.Response, ",", ";"))
-		file.WriteString(line)
+		_, _ = file.WriteString(line)
 	}
 
 	fmt.Printf("Results saved to: %s\n", filename)
@@ -108,7 +109,7 @@ func (o *Outputter) SaveAsJSON(results []types.Result, filename string) {
 	if filename == "" {
 		return
 	}
-	
+
 	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Printf("Error creating JSON file: %v\n", err)
@@ -118,7 +119,7 @@ func (o *Outputter) SaveAsJSON(results []types.Result, filename string) {
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
-	
+
 	if err := encoder.Encode(results); err != nil {
 		fmt.Printf("Error encoding JSON: %v\n", err)
 		return
@@ -131,7 +132,7 @@ func (o *Outputter) SaveAsXML(results []types.Result, filename string) {
 	if filename == "" {
 		return
 	}
-	
+
 	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Printf("Error creating XML file: %v\n", err)
@@ -139,9 +140,9 @@ func (o *Outputter) SaveAsXML(results []types.Result, filename string) {
 	}
 	defer file.Close()
 
-	file.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-	file.WriteString("<subdomains>\n")
-	
+	_, _ = file.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+	_, _ = file.WriteString("<subdomains>\n")
+
 	for _, result := range results {
 		file.WriteString("  <subdomain>\n")
 		file.WriteString(fmt.Sprintf("    <name>%s</name>\n", result.Subdomain))
@@ -150,7 +151,7 @@ func (o *Outputter) SaveAsXML(results []types.Result, filename string) {
 		file.WriteString(fmt.Sprintf("    <response>%s</response>\n", result.Response))
 		file.WriteString("  </subdomain>\n")
 	}
-	
+
 	file.WriteString("</subdomains>\n")
 	fmt.Printf("XML results saved to: %s\n", filename)
 }
@@ -159,8 +160,8 @@ func (o *Outputter) PrintProgress(current, total int) {
 	percent := float64(current) / float64(total) * 100
 	bar := strings.Repeat("=", int(percent/2))
 	spaces := strings.Repeat(" ", 50-int(percent/2))
-	
-	fmt.Printf("\r[%s%s] %.1f%% (%d/%d)", 
+
+	fmt.Printf("\r[%s%s] %.1f%% (%d/%d)",
 		bar, spaces, percent, current, total)
 }
 

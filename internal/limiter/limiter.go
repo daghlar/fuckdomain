@@ -29,7 +29,7 @@ func (rl *RateLimiter) Wait(ctx context.Context) error {
 
 	now := time.Now()
 	elapsed := now.Sub(rl.lastTime)
-	
+
 	tokensToAdd := int(elapsed / rl.interval)
 	if tokensToAdd > 0 {
 		rl.tokens = min(rl.tokens+tokensToAdd, rl.rate)
@@ -108,7 +108,7 @@ func NewRetryer(config RetryConfig) *Retryer {
 
 func (r *Retryer) Execute(ctx context.Context, fn func() error) error {
 	var lastErr error
-	
+
 	for attempt := 0; attempt <= r.config.MaxRetries; attempt++ {
 		if attempt > 0 {
 			delay := r.config.Backoff.GetDelay(attempt)
@@ -133,7 +133,7 @@ func (r *Retryer) Execute(ctx context.Context, fn func() error) error {
 func (r *Retryer) ExecuteWithResult(ctx context.Context, fn func() (interface{}, error)) (interface{}, error) {
 	var result interface{}
 	var lastErr error
-	
+
 	for attempt := 0; attempt <= r.config.MaxRetries; attempt++ {
 		if attempt > 0 {
 			delay := r.config.Backoff.GetDelay(attempt)

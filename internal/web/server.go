@@ -6,15 +6,15 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"time"
 	"subdomain-finder/internal/finder"
 	"subdomain-finder/internal/types"
+	"time"
 )
 
 type WebServer struct {
-	port     int
-	results  []types.Result
-	summary  *types.ScanSummary
+	port    int
+	results []types.Result
+	summary *types.ScanSummary
 }
 
 func NewWebServer(port int) *WebServer {
@@ -31,7 +31,7 @@ func (ws *WebServer) Start() error {
 	http.HandleFunc("/api/summary", ws.handleSummary)
 	http.HandleFunc("/api/scan", ws.handleScan)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static/"))))
-	
+
 	fmt.Printf("Web interface starting on http://localhost:%d\n", ws.port)
 	return http.ListenAndServe(fmt.Sprintf(":%d", ws.port), nil)
 }
@@ -510,7 +510,7 @@ func (ws *WebServer) handleIndex(w http.ResponseWriter, r *http.Request) {
 </body>
 </html>
 `
-	
+
 	tmplParsed := template.Must(template.New("index").Parse(tmpl))
 	tmplParsed.Execute(w, nil)
 }
@@ -530,28 +530,28 @@ func (ws *WebServer) handleScan(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	
+
 	var scanRequest struct {
 		Domain  string `json:"domain"`
 		Threads int    `json:"threads"`
 		Timeout int    `json:"timeout"`
 	}
-	
+
 	if err := json.NewDecoder(r.Body).Decode(&scanRequest); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-	
+
 	// Gerçek tarama yap
 	results, summary := ws.performRealScan(scanRequest.Domain, scanRequest.Threads, scanRequest.Timeout)
-	
+
 	ws.UpdateResults(results, summary)
-	
+
 	response := map[string]interface{}{
 		"results": results,
 		"summary": summary,
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -566,7 +566,7 @@ func (ws *WebServer) performRealScan(domain string, threads, timeout int) ([]typ
 func (ws *WebServer) runActualScan(domain string, threads, timeout int) ([]types.Result, *types.ScanSummary) {
 	// Gerçek tarama yap
 	startTime := time.Now()
-	
+
 	// Önce mevcut sonuçları kontrol et
 	jsonFile := fmt.Sprintf("results/%s.json", domain)
 	if data, err := os.ReadFile(jsonFile); err == nil {
@@ -583,25 +583,25 @@ func (ws *WebServer) runActualScan(domain string, threads, timeout int) ([]types
 				StartTime:       startTime,
 				EndTime:         time.Now(),
 			}
-			
+
 			for _, result := range results {
 				if result.IP != "" {
 					summary.FoundSubdomains++
 				}
 				summary.OpenPorts += len(result.Ports)
 				summary.Vulnerabilities += len(result.Vulnerabilities)
-				
+
 				for _, vuln := range result.Vulnerabilities {
 					if vuln.Severity == "Critical" || vuln.Severity == "High" {
 						summary.HighRiskItems++
 					}
 				}
 			}
-			
+
 			return results, summary
 		}
 	}
-	
+
 	// Eğer dosya yoksa, gerçek tarama yap
 	config := finder.Config{
 		Domain:     domain,
@@ -621,11 +621,11 @@ func (ws *WebServer) runActualScan(domain string, threads, timeout int) ([]types
 		Retries:    3,
 		Delay:      100,
 	}
-	
+
 	// Finder oluştur ve gerçek tarama yap
 	finderInstance := finder.NewFinder(config)
 	results := finderInstance.Find()
-	
+
 	// Summary oluştur
 	summary := &types.ScanSummary{
 		TotalSubdomains: len(results),
@@ -637,25 +637,25 @@ func (ws *WebServer) runActualScan(domain string, threads, timeout int) ([]types
 		StartTime:       startTime,
 		EndTime:         time.Now(),
 	}
-	
+
 	for _, result := range results {
 		if result.IP != "" {
 			summary.FoundSubdomains++
 		}
 		summary.OpenPorts += len(result.Ports)
 		summary.Vulnerabilities += len(result.Vulnerabilities)
-		
+
 		for _, vuln := range result.Vulnerabilities {
 			if vuln.Severity == "Critical" || vuln.Severity == "High" {
 				summary.HighRiskItems++
 			}
 		}
 	}
-	
+
 	// Sonuçları JSON dosyasına kaydet
 	if data, err := json.MarshalIndent(results, "", "  "); err == nil {
 		os.WriteFile(jsonFile, data, 0644)
 	}
-	
+
 	return results, summary
 }

@@ -46,10 +46,10 @@ func init() {
 	rootCmd.PersistentFlags().String("log-format", "text", "Log format (text, json)")
 	rootCmd.PersistentFlags().String("output-dir", "./results", "Output directory for results")
 
-	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
-	viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("log-level"))
-	viper.BindPFlag("log.format", rootCmd.PersistentFlags().Lookup("log-format"))
-	viper.BindPFlag("output.dir", rootCmd.PersistentFlags().Lookup("output-dir"))
+	_ = viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+	_ = viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("log-level"))
+	_ = viper.BindPFlag("log.format", rootCmd.PersistentFlags().Lookup("log-format"))
+	_ = viper.BindPFlag("output.dir", rootCmd.PersistentFlags().Lookup("output-dir"))
 }
 
 func initConfig() {

@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"subdomain-finder/internal/finder"
 	"subdomain-finder/internal/logger"
 	"subdomain-finder/internal/output"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var scanCmd = &cobra.Command{
@@ -29,20 +30,20 @@ Examples:
 }
 
 var (
-	wordlist     string
-	threads      int
-	timeout      int
-	rateLimit    int
-	outputFile   string
-	jsonOutput   bool
-	xmlOutput    bool
-	progress     bool
-	stats        bool
-	noColor      bool
-	userAgent    string
-	headers      []string
-	retries      int
-	delay        int
+	wordlist   string
+	threads    int
+	timeout    int
+	rateLimit  int
+	outputFile string
+	jsonOutput bool
+	xmlOutput  bool
+	progress   bool
+	stats      bool
+	noColor    bool
+	userAgent  string
+	headers    []string
+	retries    int
+	delay      int
 )
 
 func init() {
@@ -63,20 +64,20 @@ func init() {
 	scanCmd.Flags().IntVar(&retries, "retries", 3, "Number of retries for failed requests")
 	scanCmd.Flags().IntVar(&delay, "delay", 0, "Delay between requests in milliseconds")
 
-	viper.BindPFlag("scan.wordlist", scanCmd.Flags().Lookup("wordlist"))
-	viper.BindPFlag("scan.threads", scanCmd.Flags().Lookup("threads"))
-	viper.BindPFlag("scan.timeout", scanCmd.Flags().Lookup("timeout"))
-	viper.BindPFlag("scan.rate_limit", scanCmd.Flags().Lookup("rate-limit"))
-	viper.BindPFlag("scan.output", scanCmd.Flags().Lookup("output"))
-	viper.BindPFlag("scan.json", scanCmd.Flags().Lookup("json"))
-	viper.BindPFlag("scan.xml", scanCmd.Flags().Lookup("xml"))
-	viper.BindPFlag("scan.progress", scanCmd.Flags().Lookup("progress"))
-	viper.BindPFlag("scan.stats", scanCmd.Flags().Lookup("stats"))
-	viper.BindPFlag("scan.no_color", scanCmd.Flags().Lookup("no-color"))
-	viper.BindPFlag("scan.user_agent", scanCmd.Flags().Lookup("user-agent"))
-	viper.BindPFlag("scan.headers", scanCmd.Flags().Lookup("header"))
-	viper.BindPFlag("scan.retries", scanCmd.Flags().Lookup("retries"))
-	viper.BindPFlag("scan.delay", scanCmd.Flags().Lookup("delay"))
+	_ = viper.BindPFlag("scan.wordlist", scanCmd.Flags().Lookup("wordlist"))
+	_ = viper.BindPFlag("scan.threads", scanCmd.Flags().Lookup("threads"))
+	_ = viper.BindPFlag("scan.timeout", scanCmd.Flags().Lookup("timeout"))
+	_ = viper.BindPFlag("scan.rate_limit", scanCmd.Flags().Lookup("rate-limit"))
+	_ = viper.BindPFlag("scan.output", scanCmd.Flags().Lookup("output"))
+	_ = viper.BindPFlag("scan.json", scanCmd.Flags().Lookup("json"))
+	_ = viper.BindPFlag("scan.xml", scanCmd.Flags().Lookup("xml"))
+	_ = viper.BindPFlag("scan.progress", scanCmd.Flags().Lookup("progress"))
+	_ = viper.BindPFlag("scan.stats", scanCmd.Flags().Lookup("stats"))
+	_ = viper.BindPFlag("scan.no_color", scanCmd.Flags().Lookup("no-color"))
+	_ = viper.BindPFlag("scan.user_agent", scanCmd.Flags().Lookup("user-agent"))
+	_ = viper.BindPFlag("scan.headers", scanCmd.Flags().Lookup("header"))
+	_ = viper.BindPFlag("scan.retries", scanCmd.Flags().Lookup("retries"))
+	_ = viper.BindPFlag("scan.delay", scanCmd.Flags().Lookup("delay"))
 }
 
 func runScan(cmd *cobra.Command, args []string) {
@@ -102,19 +103,19 @@ func runScan(cmd *cobra.Command, args []string) {
 	}
 
 	log := logger.NewLogger(viper.GetString("log.level"), viper.GetString("log.format"))
-	
+
 	outputter := output.NewOutputter(cfg, log)
 	finder := finder.NewFinder(cfg)
 
 	log.Info("Starting subdomain enumeration", "domain", domain)
-	
+
 	startTime := time.Now()
 	results := finder.Find()
 	duration := time.Since(startTime)
 
-	log.Info("Subdomain enumeration completed", 
-		"domain", domain, 
-		"found", len(results), 
+	log.Info("Subdomain enumeration completed",
+		"domain", domain,
+		"found", len(results),
 		"duration", duration.String())
 
 	outputter.PrintSummary(len(results), duration)

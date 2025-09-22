@@ -9,21 +9,21 @@ import (
 )
 
 type Progress struct {
-	bar        *pb.ProgressBar
-	stats      *Stats
-	mu         sync.RWMutex
-	startTime  time.Time
-	showStats  bool
+	bar       *pb.ProgressBar
+	stats     *Stats
+	mu        sync.RWMutex
+	startTime time.Time
+	showStats bool
 }
 
 type Stats struct {
-	Total       int
-	Completed   int
-	Found       int
-	Errors      int
-	Rate        float64
-	ETA         time.Duration
-	Elapsed     time.Duration
+	Total     int
+	Completed int
+	Found     int
+	Errors    int
+	Rate      float64
+	ETA       time.Duration
+	Elapsed   time.Duration
 }
 
 func NewProgress(total int, showStats bool) *Progress {
@@ -86,7 +86,7 @@ func (p *Progress) updateStats() {
 
 	if p.stats.Completed > 0 {
 		p.stats.Rate = float64(p.stats.Completed) / elapsed.Seconds()
-		
+
 		if p.stats.Rate > 0 {
 			remaining := p.stats.Total - p.stats.Completed
 			p.stats.ETA = time.Duration(float64(remaining)/p.stats.Rate) * time.Second
@@ -129,14 +129,14 @@ type MultiProgress struct {
 }
 
 type MultiStats struct {
-	TotalBars   int
-	ActiveBars  int
-	TotalItems  int
-	Completed   int
-	Found       int
-	Errors      int
-	StartTime   time.Time
-	Elapsed     time.Duration
+	TotalBars  int
+	ActiveBars int
+	TotalItems int
+	Completed  int
+	Found      int
+	Errors     int
+	StartTime  time.Time
+	Elapsed    time.Duration
 }
 
 func NewMultiProgress() *MultiProgress {

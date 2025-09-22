@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"subdomain-finder/internal/web"
+
+	"github.com/spf13/cobra"
 )
 
 var webCmd = &cobra.Command{
@@ -14,7 +15,7 @@ var webCmd = &cobra.Command{
 	Long:  `Start the web interface for subdomain enumeration`,
 	Run: func(cmd *cobra.Command, args []string) {
 		port, _ := cmd.Flags().GetInt("port")
-		
+
 		server := web.NewWebServer(port)
 		if err := server.Start(); err != nil {
 			fmt.Printf("Error starting web server: %v\n", err)

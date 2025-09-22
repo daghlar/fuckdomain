@@ -19,16 +19,16 @@ type Technology struct {
 }
 
 type TechResult struct {
-	URL         string
+	URL          string
 	Technologies []Technology
-	Server      string
-	Framework   string
-	Database    string
-	CDN         string
-	Analytics   string
-	Widgets     []string
-	Languages   []string
-	OS          string
+	Server       string
+	Framework    string
+	Database     string
+	CDN          string
+	Analytics    string
+	Widgets      []string
+	Languages    []string
+	OS           string
 }
 
 type TechDetector struct {
@@ -319,12 +319,12 @@ func (td *TechDetector) extractVersion(text string) string {
 
 func (td *TechDetector) DetectMultiple(urls []string) map[string]*TechResult {
 	results := make(map[string]*TechResult)
-	
+
 	for _, url := range urls {
 		if result, err := td.Detect(url); err == nil {
 			results[url] = result
 		}
 	}
-	
+
 	return results
 }

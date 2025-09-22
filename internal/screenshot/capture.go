@@ -84,7 +84,7 @@ func (sc *ScreenshotCapture) Capture(url string) (*ScreenshotResult, error) {
 	}
 
 	filePath := sc.saveScreenshot(url, buf)
-	
+
 	return &ScreenshotResult{
 		URL:       url,
 		FilePath:  filePath,
@@ -98,7 +98,7 @@ func (sc *ScreenshotCapture) Capture(url string) (*ScreenshotResult, error) {
 
 func (sc *ScreenshotCapture) getViewportSize(ctx context.Context) (int, int, error) {
 	var width, height int
-	
+
 	err := chromedp.Run(ctx,
 		chromedp.Evaluate(`
 			Math.max(
@@ -119,18 +119,18 @@ func (sc *ScreenshotCapture) getViewportSize(ctx context.Context) (int, int, err
 			)
 		`, &height),
 	)
-	
+
 	if err != nil {
 		return sc.config.Width, sc.config.Height, err
 	}
-	
+
 	if width == 0 {
 		width = sc.config.Width
 	}
 	if height == 0 {
 		height = sc.config.Height
 	}
-	
+
 	return width, height, nil
 }
 
@@ -140,12 +140,12 @@ func (sc *ScreenshotCapture) saveScreenshot(url string, data []byte) string {
 		return ""
 	}
 
-	filename := fmt.Sprintf("%s_%d.png", 
-		filepath.Base(url), 
+	filename := fmt.Sprintf("%s_%d.png",
+		filepath.Base(url),
 		time.Now().Unix())
-	
+
 	filePath := filepath.Join(dir, filename)
-	
+
 	file, err := os.Create(filePath)
 	if err != nil {
 		return ""
@@ -162,7 +162,7 @@ func (sc *ScreenshotCapture) saveScreenshot(url string, data []byte) string {
 
 func (sc *ScreenshotCapture) CaptureMultiple(urls []string) map[string]*ScreenshotResult {
 	results := make(map[string]*ScreenshotResult)
-	
+
 	for _, url := range urls {
 		result, err := sc.Capture(url)
 		if err != nil {
@@ -175,22 +175,22 @@ func (sc *ScreenshotCapture) CaptureMultiple(urls []string) map[string]*Screensh
 		}
 		results[url] = result
 	}
-	
+
 	return results
 }
 
 func (sc *ScreenshotCapture) CaptureWithCustomSize(url string, width, height int) (*ScreenshotResult, error) {
 	originalWidth := sc.config.Width
 	originalHeight := sc.config.Height
-	
+
 	sc.config.Width = width
 	sc.config.Height = height
-	
+
 	result, err := sc.Capture(url)
-	
+
 	sc.config.Width = originalWidth
 	sc.config.Height = originalHeight
-	
+
 	return result, err
 }
 
@@ -238,7 +238,7 @@ func (sc *ScreenshotCapture) CaptureElement(url, selector string) (*ScreenshotRe
 	}
 
 	filePath := sc.saveScreenshot(url, buf)
-	
+
 	return &ScreenshotResult{
 		URL:       url,
 		FilePath:  filePath,
@@ -252,7 +252,7 @@ func (sc *ScreenshotCapture) CaptureElement(url, selector string) (*ScreenshotRe
 
 func (sc *ScreenshotCapture) getElementSize(ctx context.Context, selector string) (int, int, error) {
 	var width, height int
-	
+
 	err := chromedp.Run(ctx,
 		chromedp.Evaluate(fmt.Sprintf(`
 			document.querySelector('%s').offsetWidth
@@ -261,6 +261,6 @@ func (sc *ScreenshotCapture) getElementSize(ctx context.Context, selector string
 			document.querySelector('%s').offsetHeight
 		`, selector), &height),
 	)
-	
+
 	return width, height, err
 }

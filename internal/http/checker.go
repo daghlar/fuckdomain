@@ -82,7 +82,7 @@ func (c *Checker) makeRequest(url string) *HTTPResponse {
 
 	if resp.ContentLength > 0 && resp.ContentLength < 1024*1024 {
 		buffer := make([]byte, resp.ContentLength)
-		resp.Body.Read(buffer)
+		_, _ = resp.Body.Read(buffer)
 		response.Body = string(buffer)
 		response.Title = c.extractTitle(response.Body)
 	}
@@ -121,7 +121,7 @@ func (c *Checker) extractTitle(body string) string {
 
 func (c *Checker) CheckMultiple(domains []string) map[string]*HTTPResponse {
 	results := make(map[string]*HTTPResponse)
-	
+
 	for _, domain := range domains {
 		urls := []string{
 			fmt.Sprintf("http://%s", domain),
@@ -156,7 +156,7 @@ func (c *Checker) CheckWithCustomHeaders(domain string, headers map[string]strin
 		}
 
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-		
+
 		for key, value := range headers {
 			req.Header.Set(key, value)
 		}
@@ -176,7 +176,7 @@ func (c *Checker) CheckWithCustomHeaders(domain string, headers map[string]strin
 
 		if resp.ContentLength > 0 && resp.ContentLength < 1024*1024 {
 			buffer := make([]byte, resp.ContentLength)
-			resp.Body.Read(buffer)
+			_, _ = resp.Body.Read(buffer)
 			response.Body = string(buffer)
 			response.Title = c.extractTitle(response.Body)
 		}

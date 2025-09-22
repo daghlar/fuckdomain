@@ -98,12 +98,12 @@ func (vs *VulnScanner) checkSecurityHeaders(resp *http.Response) []Vulnerability
 
 	// Missing Security Headers
 	securityHeaders := map[string]string{
-		"X-Content-Type-Options": "nosniff",
-		"X-Frame-Options":        "DENY",
-		"X-XSS-Protection":       "1; mode=block",
+		"X-Content-Type-Options":    "nosniff",
+		"X-Frame-Options":           "DENY",
+		"X-XSS-Protection":          "1; mode=block",
 		"Strict-Transport-Security": "max-age=31536000",
-		"Content-Security-Policy": "default-src 'self'",
-		"Referrer-Policy":        "strict-origin-when-cross-origin",
+		"Content-Security-Policy":   "default-src 'self'",
+		"Referrer-Policy":           "strict-origin-when-cross-origin",
 	}
 
 	for header, expected := range securityHeaders {
@@ -193,12 +193,12 @@ func (vs *VulnScanner) checkDirectoryTraversal(url string, resp *http.Response) 
 		testURL := url + "/" + pattern + "etc/passwd"
 		req, _ := http.NewRequest("GET", testURL, nil)
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-		
+
 		testResp, err := vs.client.Do(req)
 		if err == nil {
 			defer testResp.Body.Close()
 			body, _ := io.ReadAll(testResp.Body)
-			
+
 			if strings.Contains(string(body), "root:") || strings.Contains(string(body), "bin:") {
 				vulns = append(vulns, Vulnerability{
 					Name:        "Directory Traversal",
@@ -232,12 +232,12 @@ func (vs *VulnScanner) checkSQLInjection(url string, resp *http.Response) []Vuln
 		testURL := url + "?id=" + pattern
 		req, _ := http.NewRequest("GET", testURL, nil)
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-		
+
 		testResp, err := vs.client.Do(req)
 		if err == nil {
 			defer testResp.Body.Close()
 			body, _ := io.ReadAll(testResp.Body)
-			
+
 			errorPatterns := []string{
 				"mysql_fetch_array",
 				"mysql_num_rows",
@@ -285,12 +285,12 @@ func (vs *VulnScanner) checkXSS(url string, resp *http.Response) []Vulnerability
 		testURL := url + "?q=" + pattern
 		req, _ := http.NewRequest("GET", testURL, nil)
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-		
+
 		testResp, err := vs.client.Do(req)
 		if err == nil {
 			defer testResp.Body.Close()
 			body, _ := io.ReadAll(testResp.Body)
-			
+
 			if strings.Contains(string(body), pattern) {
 				vulns = append(vulns, Vulnerability{
 					Name:        "Cross-Site Scripting (XSS)",
@@ -312,15 +312,15 @@ func (vs *VulnScanner) checkInformationDisclosure(body string, resp *http.Respon
 
 	// Check for sensitive information in response
 	sensitivePatterns := map[string]string{
-		"password":     "Password found in response",
-		"api_key":      "API key found in response",
-		"secret":       "Secret found in response",
-		"token":        "Token found in response",
-		"database":     "Database information found",
-		"config":       "Configuration information found",
-		"error":        "Error information disclosed",
-		"stack trace":  "Stack trace disclosed",
-		"exception":    "Exception information disclosed",
+		"password":    "Password found in response",
+		"api_key":     "API key found in response",
+		"secret":      "Secret found in response",
+		"token":       "Token found in response",
+		"database":    "Database information found",
+		"config":      "Configuration information found",
+		"error":       "Error information disclosed",
+		"stack trace": "Stack trace disclosed",
+		"exception":   "Exception information disclosed",
 	}
 
 	bodyLower := strings.ToLower(body)
@@ -368,12 +368,12 @@ func (vs *VulnScanner) checkSSLIssues(url string, resp *http.Response) []Vulnera
 	if strings.HasPrefix(url, "https://") {
 		req, _ := http.NewRequest("GET", url, nil)
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-		
+
 		testResp, err := vs.client.Do(req)
 		if err == nil {
 			defer testResp.Body.Close()
 			body, _ := io.ReadAll(testResp.Body)
-			
+
 			if strings.Contains(string(body), "http://") {
 				vulns = append(vulns, Vulnerability{
 					Name:        "Mixed Content",
@@ -391,12 +391,12 @@ func (vs *VulnScanner) checkSSLIssues(url string, resp *http.Response) []Vulnera
 
 func (vs *VulnScanner) ScanMultiple(urls []string) map[string][]Vulnerability {
 	results := make(map[string][]Vulnerability)
-	
+
 	for _, url := range urls {
 		if vulns, err := vs.ScanURL(url); err == nil {
 			results[url] = vulns
 		}
 	}
-	
+
 	return results
 }

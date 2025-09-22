@@ -34,16 +34,15 @@ type Config struct {
 }
 
 type Finder struct {
-	config         Config
-	dns            *dns.Resolver
-	http           *http.Checker
-	portScanner    *portscanner.PortScanner
-	sslAnalyzer    *ssl.SSLAnalyzer
-	techDetector   *techdetect.TechDetector
-	vulnScanner    *vulnscanner.VulnScanner
-	wordlist       *wordlist.Wordlist
+	config       Config
+	dns          *dns.Resolver
+	http         *http.Checker
+	portScanner  *portscanner.PortScanner
+	sslAnalyzer  *ssl.SSLAnalyzer
+	techDetector *techdetect.TechDetector
+	vulnScanner  *vulnscanner.VulnScanner
+	wordlist     *wordlist.Wordlist
 }
-
 
 func NewFinder(config Config) *Finder {
 	dnsResolver := dns.NewResolver(config.Timeout)
@@ -55,14 +54,14 @@ func NewFinder(config Config) *Finder {
 	wordlistManager := wordlist.NewWordlist(config.Wordlist)
 
 	return &Finder{
-		config:         config,
-		dns:            dnsResolver,
-		http:           httpChecker,
-		portScanner:    portScanner,
-		sslAnalyzer:    sslAnalyzer,
-		techDetector:   techDetector,
-		vulnScanner:    vulnScanner,
-		wordlist:       wordlistManager,
+		config:       config,
+		dns:          dnsResolver,
+		http:         httpChecker,
+		portScanner:  portScanner,
+		sslAnalyzer:  sslAnalyzer,
+		techDetector: techDetector,
+		vulnScanner:  vulnScanner,
+		wordlist:     wordlistManager,
 	}
 }
 
@@ -70,7 +69,7 @@ func (f *Finder) Find() []types.Result {
 	words := f.wordlist.GetWords()
 	results := make([]types.Result, 0)
 	resultsChan := make(chan types.Result, len(words))
-	
+
 	var wg sync.WaitGroup
 	semaphore := make(chan struct{}, f.config.Threads)
 
@@ -83,7 +82,7 @@ func (f *Finder) Find() []types.Result {
 
 			subdomain := w + "." + f.config.Domain
 			result := f.checkSubdomain(subdomain)
-			
+
 			if result.Subdomain != "" {
 				resultsChan <- result
 			}
@@ -143,19 +142,19 @@ func (f *Finder) checkSubdomain(subdomain string) types.Result {
 	// SSL Analysis
 	if sslResult, err := f.sslAnalyzer.Analyze(subdomain, 443); err == nil {
 		result.SSL = &types.SSLInfo{
-			Valid:             sslResult.IsSecure,
-			Expired:           sslResult.Certificate.IsExpired,
-			ExpiresSoon:       sslResult.Certificate.IsExpiringSoon,
-			DaysUntilExpiry:   sslResult.Certificate.DaysUntilExpiry,
-			Issuer:            sslResult.Certificate.Issuer,
-			Subject:           sslResult.Certificate.Subject,
-			SerialNumber:      sslResult.Certificate.SerialNumber,
+			Valid:              sslResult.IsSecure,
+			Expired:            sslResult.Certificate.IsExpired,
+			ExpiresSoon:        sslResult.Certificate.IsExpiringSoon,
+			DaysUntilExpiry:    sslResult.Certificate.DaysUntilExpiry,
+			Issuer:             sslResult.Certificate.Issuer,
+			Subject:            sslResult.Certificate.Subject,
+			SerialNumber:       sslResult.Certificate.SerialNumber,
 			SignatureAlgorithm: sslResult.Certificate.SignatureAlgorithm,
 			PublicKeyAlgorithm: sslResult.Certificate.PublicKeyAlgorithm,
-			Grade:             sslResult.Grade,
-			Vulnerabilities:   sslResult.Certificate.Vulnerabilities,
-			NotBefore:         sslResult.Certificate.NotBefore,
-			NotAfter:          sslResult.Certificate.NotAfter,
+			Grade:              sslResult.Grade,
+			Vulnerabilities:    sslResult.Certificate.Vulnerabilities,
+			NotBefore:          sslResult.Certificate.NotBefore,
+			NotAfter:           sslResult.Certificate.NotAfter,
 		}
 	}
 
