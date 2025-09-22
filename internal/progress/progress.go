@@ -76,7 +76,7 @@ func (p *Progress) SetTotal(total int) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.stats.Total = total
-	p.bar.SetTotal(total)
+	p.bar.SetTotal(int64(total))
 }
 
 func (p *Progress) updateStats() {

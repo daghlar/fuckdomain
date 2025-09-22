@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 	"sync"
+	"time"
 )
 
 type ErrorType string
@@ -59,7 +60,7 @@ func NewError(errorType ErrorType, message string) *AppError {
 		Details:   make(map[string]interface{}),
 		File:      file,
 		Line:      line,
-		Timestamp: fmt.Sprintf("%d", runtime.Nano()),
+		Timestamp: fmt.Sprintf("%d", time.Now().UnixNano()),
 	}
 }
 
@@ -72,7 +73,7 @@ func NewErrorWithError(errorType ErrorType, message string, err error) *AppError
 		Err:       err,
 		File:      file,
 		Line:      line,
-		Timestamp: fmt.Sprintf("%d", runtime.Nano()),
+		Timestamp: fmt.Sprintf("%d", time.Now().UnixNano()),
 	}
 }
 
@@ -90,7 +91,7 @@ func WrapError(err error, message string) *AppError {
 		Err:       err,
 		File:      file,
 		Line:      line,
-		Timestamp: fmt.Sprintf("%d", runtime.Nano()),
+		Timestamp: fmt.Sprintf("%d", time.Now().UnixNano()),
 	}
 }
 

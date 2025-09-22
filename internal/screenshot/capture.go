@@ -3,13 +3,10 @@ package screenshot
 import (
 	"context"
 	"fmt"
-	"image"
-	"image/png"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 )
 

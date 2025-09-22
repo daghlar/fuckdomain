@@ -1,7 +1,6 @@
 package reporter
 
 import (
-	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"

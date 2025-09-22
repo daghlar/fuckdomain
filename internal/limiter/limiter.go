@@ -130,8 +130,8 @@ func (r *Retryer) Execute(ctx context.Context, fn func() error) error {
 	return lastErr
 }
 
-func (r *Retryer) ExecuteWithResult[T any](ctx context.Context, fn func() (T, error)) (T, error) {
-	var result T
+func (r *Retryer) ExecuteWithResult(ctx context.Context, fn func() (interface{}, error)) (interface{}, error) {
+	var result interface{}
 	var lastErr error
 	
 	for attempt := 0; attempt <= r.config.MaxRetries; attempt++ {
